@@ -1,6 +1,6 @@
 python-telegram-bot==20.0
-flask>=3.0.0
+flask==2.2.2
 solana==0.29.0
 redis==4.3.4
 requests==2.28.1
-python-dotenv==0.29.0
+python-dotenv==0.21.0
