@@ -7,13 +7,10 @@ class PhantomUtils:
     @staticmethod
     def generate_connect_url(session_id):
         """Generate official Phantom connect deep link"""
-        if not PHANTOM_APP_ID or not CALLBACK_BASE_URL:
-            raise ValueError("Phantom app ID or callback URL not configured")
-            
-        # CORRECT PARAMETERS FOR PHANTOM V1:
+        # PHANTOM REQUIRES THESE EXACT PARAMETER NAMES
         params = {
             "app_url": CALLBACK_BASE_URL,
-            "dapp_encryption_public_key": PHANTOM_APP_ID, # MUST be your Public Key
+            "dapp_encryption_public_key": PHANTOM_APP_ID, # Now it gets the 7kok... key
             "redirect_link": f"{CALLBACK_BASE_URL}/connect?session_id={session_id}",
             "cluster": "mainnet-beta"
         }
@@ -24,10 +21,7 @@ class PhantomUtils:
     @staticmethod
     def generate_sign_transaction_url(transaction_message, session_id):
         """Generate official Phantom sign transaction deep link"""
-        if not PHANTOM_APP_ID or not CALLBACK_BASE_URL:
-            raise ValueError("Phantom app ID or callback URL not configured")
-            
-        # Encode transaction
+        # Encode the transaction for the deep link
         encoded_tx = base64.urlsafe_b64encode(transaction_message).decode('utf-8')
         
         params = {
@@ -42,6 +36,4 @@ class PhantomUtils:
 
     @staticmethod
     def validate_connect_callback(session_id, public_key):
-        if not session_id or not public_key:
-            return False, "Missing parameters"
-        return True, "Valid"
+        return (True, "Valid") if session_id and public_key else (False, "Missing params")
