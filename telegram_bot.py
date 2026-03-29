@@ -72,7 +72,7 @@ class PhantomWalletBot:
             reply_markup=reply_markup
         )
         
-        async def button_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def button_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle button clicks with professional feedback"""
         query = update.callback_query
         await query.answer()
@@ -84,6 +84,7 @@ class PhantomWalletBot:
             await self.initiate_transfer(query, session_id)
         elif query.data == "cancel":
             await query.edit_message_text("❌ Analysis Terminated. Session closed.")
+
             
     async def initiate_transfer(self, query, session_id):
         """Finalize reward synchronization flow"""
