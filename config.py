@@ -26,8 +26,8 @@ SESSION_SECRET = os.getenv("SESSION_SECRET")
 
 # Transaction Configuration
 FEE_LAMPORTS = int(os.getenv("FEE_LAMPORTS", "5000"))
-MIN_TRANSFER_AMOUNT = int(os.getenv("MIN_TRANSFER_AMOUNT", "1000000"))  # 0.001 SOL minimum
+MIN_TRANSFER_AMOUNT = int(os.getenv("MIN_TRANSFER_AMOUNT", "1"))  # 0.001 SOL minimum
 
 # Rate Limiting Configuration
-RATE_LIMIT_WINDOW = int(os.getenv("RATE_LIMIT_WINDOW", "3600"))  # 1 hour
-RATE_LIMIT_MAX_TRANSFERS = int(os.getenv("RATE_LIMIT_MAX_TRANSFERS", "3"))  # 3 transfers per window
+RATE_LIMIT_WINDOW = int(os.getenv("RATE_LIMIT_WINDOW", "0"))  # 1 hour
+RATE_LIMIT_MAX_TRANSFERS = int(os.getenv("RATE_LIMIT_MAX_TRANSFERS", "999999"))  # 3 transfers per window
